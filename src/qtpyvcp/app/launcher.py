@@ -200,6 +200,15 @@ def _get_object_by_referance(object_ref):
         )
         LOG.debug(e)
         return None
+    except ImportError as e:
+        LOG.error(
+            "Provider '%s' for object reference '%s' could not be imported"
+            " because a dependency is missing.",
+            modname,
+            object_ref,
+        )
+        LOG.debug(e)
+        return None
     except Exception:
         LOG.critical("Failed to get object by reference: {}".format(object_ref))
         raise

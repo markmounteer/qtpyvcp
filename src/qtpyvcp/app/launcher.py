@@ -240,6 +240,9 @@ def loadWindows(windows):
 
 def loadDialogs(dialogs):
     for dialogs_id, dialogs_dict in list(dialogs.items()):
-
-        inst = _initialize_object_from_dict(dialogs_dict)
-        qtpyvcp.DIALOGS[dialogs_id] = inst
+        try:
+            inst = _initialize_object_from_dict(dialogs_dict)
+            qtpyvcp.DIALOGS[dialogs_id] = inst
+        except Exception as e:
+            LOG.warning("Failed to load dialog '%s': %s", dialogs_id, e)
+            LOG.debug("Dialog loading error details:", exc_info=True)

@@ -3,6 +3,21 @@ from qtpy.QtWidgets import QApplication, QMessageBox
 from qtpyvcp import DIALOGS
 from qtpyvcp.utilities.logger import getLogger
 
+# Ensure dialog modules that are referenced from the default configuration are
+# always importable when the package is installed. Some packaging workflows may
+# not eagerly import submodules, so explicitly importing here guarantees that
+# the ``toolchange_dialog`` module is registered and available for dynamic
+# loading via ``qtpyvcp.widgets.dialogs.toolchange_dialog:ToolChangeDialog``.
+try:  # pragma: no cover - import guard is best-effort
+    from .toolchange_dialog import ToolChangeDialog  # noqa: F401
+except ModuleNotFoundError:
+    # If the module is genuinely missing we log an error instead of letting the
+    # VCP crash with a less clear traceback during dynamic loading.
+    getLogger(__name__).error(
+        "Missing toolchange dialog module. Ensure qtpyvcp is installed with "
+        "the dialogs package files."
+    )
+
 LOG = getLogger(__name__)
 
 ACTIVE_DIALOGS = []

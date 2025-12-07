@@ -83,7 +83,7 @@ class DrillOps(BaseGenerator):
             # Use the tap cycle to tap a 1/4-20 right hand thread.
             # If you want to tap a left hand thread, negate the spindle speed.
             f.ops.append(drill.tap(1 / 20))
-            print f.to_string()
+            print(f.to_string())
             f.write_to_file('/tmp/drill.ngc')
         """
     def __init__(self):

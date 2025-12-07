@@ -18,6 +18,8 @@ version = "0.0"
 packages = [
     { include = "examples", from = "src" },
     { include = "qtpyvcp", from = "src" },
+    # Ensure operations utilities are packaged for downstream consumers.
+    { include = "qtpyvcp.ops", from = "src" },
     { include = "video_tests", from = "src" },
 ]
 

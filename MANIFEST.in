@@ -1,5 +1,6 @@
 recursive-include src/examples *.yml *.yaml *.ui *.qss *.qrc *.qml *.png
 recursive-include src/qtpyvcp *.yml *.yaml *.ui *.qss *.qrc *.qml *.png
+recursive-include src/qtpyvcp/ops *.py
 recursive-include src/video_tests
 recursive-include linuxcnc *.*
 

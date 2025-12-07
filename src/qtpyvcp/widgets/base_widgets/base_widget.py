@@ -242,7 +242,10 @@ class VCPBaseWidget(VCPPrimitiveWidget):
                                   .format(chan.get('url', '')))
                     return
 
-            prop = self.RULE_PROPERTIES[rule['property']]
+            prop = self.RULE_PROPERTIES.get(rule['property'])
+            if prop is None:
+                LOG.error("Unknown rule property '%s' on widget '%s'", rule['property'], self.objectName())
+                continue
 
             if prop[1] is None:
                 # donothing

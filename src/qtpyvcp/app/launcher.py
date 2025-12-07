@@ -195,18 +195,20 @@ def _get_object_by_referance(object_ref):
     except ModuleNotFoundError as e:
         LOG.error(
             "Failed to import provider module '%s' for object reference '%s'."
-            " Ensure the provider path is correct and installed.",
+            " Ensure the provider path is correct and installed. Reason: %s",
             modname,
             object_ref,
+            e,
         )
         LOG.debug(e)
         return None
     except ImportError as e:
         LOG.error(
             "Provider '%s' for object reference '%s' could not be imported"
-            " because a dependency is missing.",
+            " because a dependency is missing or failed to load. Reason: %s",
             modname,
             object_ref,
+            e,
         )
         LOG.debug(e)
         return None
@@ -265,6 +267,14 @@ def loadWindows(windows):
     for window_id, window_dict in list(windows.items()):
 
         window = _initialize_object_from_dict(window_dict)
+
+        if window is None:
+            LOG.warning(
+                "Window '%s' was not loaded because its provider could not be initialised.",
+                window_id,
+            )
+            continue
+
         qtpyvcp.WINDOWS[window_id] = window
 
         if window_id == 'mainwindow':

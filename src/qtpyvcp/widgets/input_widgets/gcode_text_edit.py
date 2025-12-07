@@ -458,7 +458,8 @@ class GcodeTextEdit(QPlainTextEdit):
         else:
             self.setReadOnly(True)
 
-        self.readonly != state
+        # store whether the editor is in a read-only state
+        self.readonly = not state
 
     @Property(bool)
     def readOnly(self):

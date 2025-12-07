@@ -191,6 +191,15 @@ def _get_object_by_referance(object_ref):
     modname, sep, attrname = object_ref.partition(':')
     try:
         return getattr(importlib.import_module(modname), attrname)
+    except ModuleNotFoundError as e:
+        LOG.error(
+            "Failed to import provider module '%s' for object reference '%s'."
+            " Ensure the provider path is correct and installed.",
+            modname,
+            object_ref,
+        )
+        LOG.debug(e)
+        return None
     except Exception:
         LOG.critical("Failed to get object by reference: {}".format(object_ref))
         raise
@@ -203,6 +212,14 @@ def _initialize_object_from_dict(object_dict, parent=None):
     kwargs = object_dict.get('kwargs') or {}
 
     obj = _get_object_by_referance(provider)
+
+    if obj is None:
+        LOG.error(
+            "Skipping object initialisation for provider '%s' because the "
+            "module could not be imported.",
+            provider,
+        )
+        return None
 
     if parent is not None:
         kwargs.update({'parent': parent})
@@ -242,4 +259,11 @@ def loadDialogs(dialogs):
     for dialogs_id, dialogs_dict in list(dialogs.items()):
 
         inst = _initialize_object_from_dict(dialogs_dict)
+        if inst is None:
+            LOG.warning(
+                "Dialog '%s' was not loaded because its provider could not be initialised.",
+                dialogs_id,
+            )
+            continue
+
         qtpyvcp.DIALOGS[dialogs_id] = inst

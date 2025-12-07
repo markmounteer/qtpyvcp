@@ -3,6 +3,7 @@ import sys
 import linuxcnc
 
 from qtpy import uic
+from xml.etree import ElementTree
 from qtpy.QtGui import QKeySequence
 from qtpy.QtCore import Qt, Slot, QTimer
 from qtpy.QtWidgets import QMainWindow, QApplication, QAction, QMessageBox, \
@@ -122,6 +123,34 @@ class VCPMainWindow(QMainWindow):
             ui_file (str) : Path to a .ui file to load.
         """
         # TODO: Check for compiled *_ui.py files and load from that if exists
+        try:
+            # Do a quick validation pass so we can emit a clear error message
+            # if the file isn't a Qt Designer .ui file. PyQt's parser throws
+            # a generic ``SyntaxError: not created by Qt Designer`` which
+            # doesn't provide any context to the user.
+            tree = ElementTree.parse(ui_file)
+            root = tree.getroot()
+            if root.tag != 'ui':
+                raise SyntaxError
+        except (SyntaxError, ElementTree.ParseError):
+            preview_lines = []
+            try:
+                with open(ui_file, 'r', encoding='utf-8', errors='replace') as fh:
+                    for _ in range(5):
+                        line = fh.readline()
+                        if not line:
+                            break
+                        preview_lines.append(line)
+            except Exception:
+                preview_lines.append("<unable to read file>")
+
+            preview = ''.join(preview_lines)
+            raise SyntaxError(
+                f"UI file '{ui_file}' is not a Qt Designer .ui file. "
+                f"Ensure the file was saved from Qt Designer (root <ui> tag). "
+                f"Preview:\n{preview}"
+            )
+
         uic.loadUi(ui_file, self)
 
     def loadStylesheet(self, stylesheet):

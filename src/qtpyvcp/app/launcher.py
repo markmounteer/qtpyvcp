@@ -190,7 +190,8 @@ def _load_vcp_from_entry_point(vcp_name, opts):
 def _get_object_by_referance(object_ref):
     modname, sep, attrname = object_ref.partition(':')
     try:
-        return getattr(importlib.import_module(modname), attrname)
+        module = importlib.import_module(modname)
+        return getattr(module, attrname)
     except ModuleNotFoundError as e:
         LOG.error(
             "Failed to import provider module '%s' for object reference '%s'."
@@ -204,6 +205,16 @@ def _get_object_by_referance(object_ref):
         LOG.error(
             "Provider '%s' for object reference '%s' could not be imported"
             " because a dependency is missing.",
+            modname,
+            object_ref,
+        )
+        LOG.debug(e)
+        return None
+    except AttributeError as e:
+        LOG.error(
+            "Provider attribute '%s' was not found in module '%s' while"
+            " resolving object reference '%s'.",
+            attrname,
             modname,
             object_ref,
         )

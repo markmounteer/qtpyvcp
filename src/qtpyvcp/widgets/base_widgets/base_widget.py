@@ -59,6 +59,7 @@ class VCPBaseWidget(VCPPrimitiveWidget):
         'None': ['None', None],
         'Enable': ['setEnabled', bool],
         'Visible': ['setVisible', bool],
+        'Text': ['setText', str],
         'Style Class': ['setStyleClass', str],
         'Style Sheet': ['setStyleSheet', str],
     }

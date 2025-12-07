@@ -148,8 +148,15 @@ class MDIHistory(QListWidget, CMDWidget):
             self.setCurrentRow(row)
             
     @Slot()
-    def removeAll(self):
-        """Remove all items from list and from history"""
+    @Slot(bool)
+    def removeAll(self, _checked=False):
+        """Remove all items from list and from history.
+
+        Some UI connections (for example QAction.triggered) pass a boolean
+        argument. Accepting an optional ``_checked`` parameter ensures those
+        slots can be wired without Qt failing to find a compatible slot
+        signature during UI loading.
+        """
         self.clear()
         STATUS.mdi_remove_all()
 
